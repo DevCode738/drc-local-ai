@@ -8,11 +8,13 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 NEXA_DIR="/opt/nexa-ai"
 MODEL_DIR="$NEXA_DIR/models"
+APP_DIR="$NEXA_DIR/app"
 MODEL_URL="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
 MODEL_NAME="qwen2.5-1.5b-instruct-q4_k_m.gguf"
 MODEL_PATH="$MODEL_DIR/$MODEL_NAME"
 
-mkdir -p "$NEXA_DIR"/{models,data,skills,downloads,bin}
+# CRITICAL: Create ALL dirs first
+mkdir -p "$NEXA_DIR" "$MODEL_DIR" "$APP_DIR" "$NEXA_DIR/data" "$NEXA_DIR/skills" "$NEXA_DIR/downloads" "$NEXA_DIR/bin"
 
 echo "📦 Installing dependencies..."
 apt-get update -qq
@@ -30,8 +32,8 @@ pip install -q --upgrade pip
 CMAKE_ARGS="-DLLAMA_BLAS=OFF -DLLAMA_CUDA=OFF" pip install -q llama-cpp-python
 
 echo "⬇️ Downloading NEXA engine..."
-curl -fsSL https://raw.githubusercontent.com/DevCode738/drc-local-ai/main/nexa-own.py -o "$NEXA_DIR/app/nexa-own.py"
-chmod +x "$NEXA_DIR/app/nexa-own.py"
+curl -fsSL https://raw.githubusercontent.com/DevCode738/drc-local-ai/main/nexa-own.py -o "$APP_DIR/nexa-own.py"
+chmod +x "$APP_DIR/nexa-own.py"
 
 # Pre-download model
 if [ ! -f "$MODEL_PATH" ] || [ $(stat -c%s "$MODEL_PATH" 2>/dev/null || echo 0) -lt 100000000 ]; then
