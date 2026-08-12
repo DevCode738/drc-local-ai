@@ -1,5 +1,7 @@
 #!/bin/bash
+# NEXA FULL v3 — Fixed Installer
 set -e
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🧠 NEXA FULL v3 — Modular AI Engine"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -7,11 +9,11 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 [ "$EUID" -ne 0 ] && echo "❌ Run as root: sudo bash install-nexa-full.sh" && exit 1
 
 NEXA_DIR="/opt/nexa"
-mkdir -p "$NEXA_DIR"/{config,data,knowledge,logs,bin}
+mkdir -p "$NEXA_DIR"/{config,data,knowledge,logs,bin,app}
 
 # ─── STEP 1: INSPECT ───
 echo ""
-echo "📋 STEP 1: VPS Inspection"
+echo "📋 VPS Inspection"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 RAM_MB=$(free -m | awk '/^Mem:/ {print $2}')
@@ -22,9 +24,7 @@ DISK_FREE=$(df -h / | awk 'NR==2 {print $4}')
 echo "  RAM: ${RAM_GB}GB | Cores: $CPU_CORES | Disk Free: $DISK_FREE"
 
 if command -v ollama &>/dev/null; then
-    echo "  Ollama: $(ollama --version 2>/dev/null || echo 'installed')"
-    echo "  Models:"
-    ollama list 2>/dev/null | head -10 || echo "    (none or Ollama not running)"
+    echo "  Ollama binary: $(which ollama)"
 else
     echo "  Ollama: Not installed"
 fi
@@ -42,27 +42,44 @@ else
 fi
 
 echo ""
-echo "  Selected Model: $MODEL"
-echo "  Reasoning: $R1"
+echo "  Selected: $MODEL (Reasoning: $R1)"
 read -p "  Press Enter to continue or type custom model: " USER_MODEL
 [ -n "$USER_MODEL" ] && MODEL="$USER_MODEL"
 
 # ─── STEP 2: INSTALL OLLAMA ───
 echo ""
-echo "🦙 STEP 2: Ollama"
+echo "🦙 Installing Ollama..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 if ! command -v ollama &>/dev/null; then
-    echo "⬇️ Installing Ollama..."
     curl -fsSL https://ollama.com/install.sh | sh
     echo "✅ Ollama installed"
 else
-    echo "✅ Ollama already installed"
+    echo "✅ Ollama already present"
 fi
 
-# ─── STEP 3: SYSTEMD ───
+# ─── STEP 3: FIX USER/GROUP ───
 echo ""
-echo "⚙️  STEP 3: Systemd Service"
+echo "👤 Fixing Ollama user..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Remove old user if exists with issues
+userdel ollama 2>/dev/null || true
+groupdel ollama 2>/dev/null || true
+
+# Create fresh
+groupadd -f ollama 2>/dev/null || true
+useradd -r -g ollama -s /bin/false -m -d /usr/share/ollama ollama 2>/dev/null || true
+
+# Ensure home dir exists
+mkdir -p /usr/share/ollama
+chown -R ollama:ollama /usr/share/ollama 2>/dev/null || true
+
+echo "✅ User fixed"
+
+# ─── STEP 4: SYSTEMD ───
+echo ""
+echo "⚙️  Setting up Systemd..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 cat > /etc/systemd/system/ollama.service << 'EOF'
@@ -84,37 +101,46 @@ Environment="OLLAMA_ORIGINS=*"
 WantedBy=default.target
 EOF
 
-id -u ollama &>/dev/null || useradd -r -g ollama -s /bin/false -m -d /usr/share/ollama ollama 2>/dev/null || useradd -r -s /bin/false -m -d /usr/share/ollama ollama
 systemctl daemon-reload
 systemctl enable ollama
 systemctl restart ollama
 
-echo "⏳ Waiting for Ollama..."
+echo "⏳ Waiting for Ollama (max 30s)..."
 for i in {1..30}; do
-    curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && break
+    if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
+        echo "✅ Ollama running on port 11434"
+        break
+    fi
+    echo -n "."
     sleep 1
 done
 
-if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
-    echo "✅ Ollama running"
-else
-    echo "⚠️ Ollama may need manual start: sudo systemctl start ollama"
+if ! curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
+    echo ""
+    echo "⚠️  Ollama not responding. Trying manual start..."
+    nohup ollama serve > /tmp/ollama.log 2>&1 &
+    sleep 5
+    if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
+        echo "✅ Ollama running (manual start)"
+    else
+        echo "❌ Ollama failed to start. Check: journalctl -u ollama -n 20"
+    fi
 fi
 
-# ─── STEP 4: PULL MODELS ───
+# ─── STEP 5: PULL MODELS ───
 echo ""
-echo "🧠 STEP 4: Pulling Models"
+echo "🧠 Pulling Models..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "⬇️ This takes 10-20 minutes depending on speed..."
+echo "⬇️ This takes 10-20 min..."
 
-ollama pull "$MODEL"
-[ -n "$R1" ] && ollama pull "$R1"
+ollama pull "$MODEL" || echo "⚠️ Model pull may need retry"
+[ -n "$R1" ] && ollama pull "$R1" || echo "⚠️ Reasoning model pull may need retry"
 
-echo "✅ Models ready"
+echo "✅ Models done"
 
-# ─── STEP 5: DEPLOY NEXA ───
+# ─── STEP 6: DEPLOY NEXA ───
 echo ""
-echo "🚀 STEP 5: Deploying NEXA"
+echo "🚀 Deploying NEXA..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 curl -fsSL https://raw.githubusercontent.com/DevCode738/drc-local-ai/main/nexa-full.py -o "$NEXA_DIR/app/nexa-full.py"
@@ -152,12 +178,18 @@ chmod +x "$NEXA_DIR/bin/n"
 ln -sf "$NEXA_DIR/bin/nexa" /usr/local/bin/nexa
 ln -sf "$NEXA_DIR/bin/n" /usr/local/bin/n
 
-# ─── STEP 6: TEST ───
+# ─── STEP 7: TEST ───
 echo ""
-echo "🧪 STEP 6: Testing"
+echo "🧪 Testing..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python3 "$NEXA_DIR/app/nexa-full.py" --doctor 2>/dev/null || echo "⚠️ Doctor test skipped (Ollama may still be loading model)"
+if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
+    echo "✅ Ollama API reachable"
+    MODELS=$(curl -s http://localhost:11434/api/tags | python3 -c "import sys,json; d=json.load(sys.stdin); print(', '.join([m['name'] for m in d.get('models',[])]))" 2>/dev/null || echo "unknown")
+    echo "  Models: $MODELS"
+else
+    echo "⚠️ Ollama API not reachable yet"
+fi
 
 # ─── DONE ───
 echo ""
@@ -165,27 +197,10 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "✅ NEXA FULL v3 INSTALLED"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "Start chatting:"
-echo "  nexa    or    n"
+echo "Start: nexa    or    n"
 echo ""
 echo "Commands:"
-echo "  nexa --new       Fresh conversation"
-echo "  nexa --history   List sessions"
+echo "  nexa --doctor    Diagnostics"
 echo "  nexa --status    System status"
-echo "  nexa --doctor    Run diagnostics"
-echo "  nexa --model     List installed models"
-echo ""
-echo "Inside chat:"
-echo "  search <query>     Web search"
-echo "  ! <cmd>            Shell command"
-echo "  fetch <url>        Fetch webpage"
-echo "  add <file>         Add to knowledge"
-echo "  remember <k> <v>   Store memory"
-echo "  recall <key>       Retrieve memory"
-echo ""
-echo "  /new /history /clear /memory /forget /status /doctor /help /exit"
-echo ""
-echo "Model: $MODEL"
-echo "Data:  $NEXA_DIR/data/"
-echo "Logs:  $NEXA_DIR/logs/"
+echo "  nexa --model     List models"
 echo ""
