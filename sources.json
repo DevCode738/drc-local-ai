@@ -1,0 +1,259 @@
+{
+  "knowledge_sources": [
+    {
+      "name": "Python Docs",
+      "url": "https://docs.python.org/3/tutorial/",
+      "type": "web",
+      "priority": 1
+    },
+    {
+      "name": "Linux Command Line",
+      "url": "https://linuxcommand.org/tlcl.php",
+      "type": "web",
+      "priority": 1
+    },
+    {
+      "name": "Bash Guide",
+      "url": "https://tldp.org/LDP/abs/html/",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Algorithms",
+      "url": "https://www.geeksforgeeks.org/fundamentals-of-algorithms/",
+      "type": "web",
+      "priority": 1
+    },
+    {
+      "name": "System Design",
+      "url": "https://github.com/donnemartin/system-design-primer",
+      "type": "github",
+      "priority": 2
+    },
+    {
+      "name": "Python Patterns",
+      "url": "https://python-patterns.guide/",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Networking Basics",
+      "url": "https://www.practicalnetworking.net/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "SQLite Tutorial",
+      "url": "https://www.sqlitetutorial.net/",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Regex Guide",
+      "url": "https://www.regular-expressions.info/tutorial.html",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "HTTP Protocol",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "JSON Guide",
+      "url": "https://www.json.org/json-en.html",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Linux Sysadmin",
+      "url": "https://linuxize.com/",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Docker Basics",
+      "url": "https://docs.docker.com/get-started/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Git Guide",
+      "url": "https://git-scm.com/book/en/v2",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Vim Tutorial",
+      "url": "https://www.openvim.com/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "SSH Security",
+      "url": "https://www.ssh.com/academy/ssh",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Firewall Basics",
+      "url": "https://wiki.archlinux.org/title/Iptables",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Cron Jobs",
+      "url": "https://ostechnix.com/a-beginners-guide-to-cron-jobs/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Process Management",
+      "url": "https://www.digitalocean.com/community/tutorials/process-management-in-linux",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Log Analysis",
+      "url": "https://www.loggly.com/ultimate-guide/linux-logging-basics/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Web Scraping",
+      "url": "https://realpython.com/beautiful-soup-web-scraper-python/",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "API Design",
+      "url": "https://restfulapi.net/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Encryption Basics",
+      "url": "https://www.cloudflare.com/learning/ssl/what-is-encryption/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Logic Puzzles",
+      "url": "https://www.brainden.com/logic-puzzles.htm",
+      "type": "web",
+      "priority": 1
+    },
+    {
+      "name": "Math Fundamentals",
+      "url": "https://www.khanacademy.org/math",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "Data Structures",
+      "url": "https://www.programiz.com/dsa/data-structure-types",
+      "type": "web",
+      "priority": 1
+    },
+    {
+      "name": "SQL Basics",
+      "url": "https://www.w3schools.com/sql/",
+      "type": "web",
+      "priority": 2
+    },
+    {
+      "name": "HTML/CSS Intro",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/HTML",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "JavaScript Basics",
+      "url": "https://javascript.info/",
+      "type": "web",
+      "priority": 3
+    },
+    {
+      "name": "Cybersecurity Basics",
+      "url": "https://www.cisa.gov/cybersecurity",
+      "type": "web",
+      "priority": 2
+    }
+  ],
+  "datasets": [
+    {
+      "name": "Common Sense QA",
+      "url": "https://raw.githubusercontent.com/commonsenseqa/commonsenseqa/master/train_rand_split.jsonl",
+      "type": "jsonl"
+    },
+    {
+      "name": "Logic Questions",
+      "url": "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv",
+      "type": "csv",
+      "note": "pattern learning"
+    }
+  ],
+  "code_repos": [
+    {
+      "name": "Python Cookbook",
+      "url": "https://raw.githubusercontent.com/dabeaz-course/practical-python/master/Notes/Contents.md",
+      "type": "raw"
+    },
+    {
+      "name": "Linux Commands",
+      "url": "https://raw.githubusercontent.com/trinib/Linux-Commands-Cheat-Sheet/main/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Bash Snippets",
+      "url": "https://raw.githubusercontent.com/alexanderepstein/Bash-Snippets/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Python Tricks",
+      "url": "https://raw.githubusercontent.com/brennerm/PyTricks/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "System Design Patterns",
+      "url": "https://raw.githubusercontent.com/donnemartin/system-design-primer/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Vim Cheat Sheet",
+      "url": "https://raw.githubusercontent.com/rtorr/vim-cheat-sheet/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Git Cheat Sheet",
+      "url": "https://raw.githubusercontent.com/github/gitignore/main/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Regex Cheat Sheet",
+      "url": "https://raw.githubusercontent.com/ziishaned/learn-regex/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Docker Cheat Sheet",
+      "url": "https://raw.githubusercontent.com/wsargent/docker-cheat-sheet/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "SQL Cheat Sheet",
+      "url": "https://raw.githubusercontent.com/enochtangg/quick-SQL-cheatsheet/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "HTTP Status Codes",
+      "url": "https://raw.githubusercontent.com/for-GET/http-decision-diagram/master/README.md",
+      "type": "raw"
+    },
+    {
+      "name": "Linux Performance",
+      "url": "https://raw.githubusercontent.com/brendangregg/perf-tools/master/README.md",
+      "type": "raw"
+    }
+  ]
+}
