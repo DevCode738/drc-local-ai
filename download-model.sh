@@ -1,6 +1,6 @@
 #!/bin/bash
+set -e
 # NEXA Model Pre-Downloader
-# Run this first, then install is instant
 
 MODEL_DIR="/opt/nexa-ai/models"
 MODEL_URL="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
